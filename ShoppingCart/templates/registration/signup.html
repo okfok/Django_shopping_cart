@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<dev align="center">
+
+    <h2>Sign up</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if error %}
+        <div class="p-3 mb-2 bg-danger text-white">{{error}}</div>
+        {% endif %}
+        <button class="btn btn-lg btn-primary" type="submit">Sign Up</button>
+    </form>
+</dev>
+{% endblock %}
