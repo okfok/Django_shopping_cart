@@ -18,9 +18,12 @@
         <p class="lead">{{item.description}}</p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
             <!--            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Primary</button>-->
+
             <form action="/item/{{item.id}}/add_to_cart" method="post">
+                {% csrf_token %}
                 <button type="submit" class="btn btn-outline-secondary btn-lg px-4">Add to cart</button>
             </form>
+
         </div>
     </div>
 </div>

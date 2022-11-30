@@ -41,7 +41,22 @@ def cart(request):
 
 
 def add_item_to_cart(request, item_id):
-    ...
+    if request.user.is_authenticated:
+        cart = Cart.objects.get(user=request.user)
+        if not cart:
+            cart = Cart(request.user)
+
+        item = Item.objects.get(id=item_id)
+
+        if item not in [citem.item for citem in CartItem.objects.filter(cart=cart)]:
+            CartItem(cart=cart, item=item, count=1).save()
+
+        return HttpResponseRedirect('/cart')
+
+    else:
+        return HttpResponseRedirect('/signup')
+
+
 
 
 def sign_up(request):

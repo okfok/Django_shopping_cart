@@ -1,3 +1,6 @@
 venv
 .idea
 ShoppingCart/db.sqlite3
+ShoppingCart/ShoppingCart/__pycache__
+ShoppingCart/shop/__pycache__
+ShoppingCart/shop/migrations/__pycache__
