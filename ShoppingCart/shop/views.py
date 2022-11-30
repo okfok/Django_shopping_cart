@@ -1,10 +1,44 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 
 from .forms import LoginForm, SignUpForm
 from .models import Item, Cart, CartItem
+
+
+def is_authenticated(func):
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_authenticated:
+
+            return func(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect('/signup')
+
+    return wrapper
+
+
+def is_post_method(func):
+    def wrapper(request, *args, **kwargs):
+        if request.method == 'POST':
+
+            return func(request, *args, **kwargs)
+        else:
+            raise Http404()
+
+    return wrapper
+
+
+def create_cart_if_not_exists(func):
+    @is_authenticated
+    def wrapper(request, *args, **kwargs):
+        cart = Cart.objects.get(user=request.user)
+        if not cart:
+            Cart(request.user).save()
+
+        return func(request, *args, **kwargs)
+
+    return wrapper
 
 
 def index(request):
@@ -24,37 +58,70 @@ def item(request, item_id):
     return render(request, 'shop/item.html', {'item': Item.objects.get(id=item_id)})
 
 
+@create_cart_if_not_exists
 def cart(request):
-    if request.user.is_authenticated:
-        cart = Cart.objects.get(user=request.user)
-        if not cart:
-            cart = Cart(request.user)
+    cart = Cart.objects.get(user=request.user)
 
-        citems = CartItem.objects.filter(cart=cart)
-        return render(request, 'shop/cart.html', {
-            'citems': citems,
-            'count': len(citems),
-            'total': sum([citem.price for citem in citems])
-        })
-    else:
-        return HttpResponseRedirect('/signup')
+    citems = CartItem.objects.filter(cart=cart)
+    return render(request, 'shop/cart.html', {
+        'citems': citems,
+        'count': len(citems),
+        'total': sum([citem.price for citem in citems])
+    })
 
 
+@is_post_method
+@create_cart_if_not_exists
 def add_item_to_cart(request, item_id):
-    if request.method == 'POST' and request.user.is_authenticated:
+    cart = Cart.objects.get(user=request.user)
 
-        cart = Cart.objects.get(user=request.user)
-        if not cart:
-            cart = Cart(request.user)
+    item = Item.objects.get(id=item_id)
 
-        item = Item.objects.get(id=item_id)
+    if item not in [citem.item for citem in CartItem.objects.filter(cart=cart)]:
+        CartItem(cart=cart, item=item, count=1).save()
 
-        if item not in [citem.item for citem in CartItem.objects.filter(cart=cart)]:
-            CartItem(cart=cart, item=item, count=1).save()
+    return HttpResponseRedirect('/cart')
 
-        return HttpResponseRedirect('/cart')
 
-    return HttpResponseRedirect('/signup')
+@is_post_method
+@create_cart_if_not_exists
+def increase_item_count_in_cart(request, citem_id):
+    cart = Cart.objects.get(user=request.user)
+    citem = CartItem.objects.get(id=citem_id)
+
+    if citem in CartItem.objects.filter(cart=cart):
+        citem.count += 1
+        citem.save()
+
+    return HttpResponseRedirect('/cart')
+
+
+@is_post_method
+@create_cart_if_not_exists
+def decrease_item_count_in_cart(request, citem_id):
+    cart = Cart.objects.get(user=request.user)
+    citem = CartItem.objects.get(id=citem_id)
+
+    if citem in CartItem.objects.filter(cart=cart):
+        if citem.count <= 1:
+            citem.delete()
+        else:
+            citem.count -= 1
+            citem.save()
+
+    return HttpResponseRedirect('/cart')
+
+
+@is_post_method
+@create_cart_if_not_exists
+def remove_item_in_cart(request, citem_id):
+    cart = Cart.objects.get(user=request.user)
+    citem = CartItem.objects.get(id=citem_id)
+
+    if citem in CartItem.objects.filter(cart=cart):
+        citem.delete()
+
+    return HttpResponseRedirect('/cart')
 
 
 def sign_up(request):

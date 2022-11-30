@@ -16,10 +16,28 @@
             {% for citem in citems %}
             <li class="list-group-item d-flex justify-content-between lh-sm">
                 <div>
-                    <h6 class="my-0">{{citem.count}} {{citem.item.name}}</h6>
+                    <h6 class="my-0">{{citem.item.name}}</h6>
                     <small class="text-muted">{{citem.item.description}}</small>
+                    <div>
+                        <form action="/cart/{{citem.id}}/decrease" method="post" style="float: left">
+                            {% csrf_token %}
+                            <button class="button_cart_change_count" type="submit">-
+                            </button>
+                        </form>
+                        <span style="float: left">&nbsp{{citem.count}}&nbsp</span>
+                        <form action="/cart/{{citem.id}}/increase" method="post" style="float: left">
+                            {% csrf_token %}
+                            <button class="button_cart_change_count" type="submit">+</button>
+                        </form>
+                    </div>
                 </div>
-                <span class="text-muted">{{citem.price}}$</span>
+                <div class="text-muted">
+                    <span>{{citem.price}}$</span><br><br>
+                    <form action="/cart/{{citem.id}}/remove" method="post" style="float: right; align: bottom;">
+                        {% csrf_token %}
+                        <button class="button_cart_change_count" type="submit">x</button>
+                    </form>
+                </div>
             </li>
             {% endfor %}
 
@@ -51,25 +69,6 @@
                     <input type="text" class="form-control" id="lastName" placeholder="" value="" required="">
                     <div class="invalid-feedback">
                         Valid last name is required.
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <label for="username" class="form-label">Username</label>
-                    <div class="input-group has-validation">
-                        <span class="input-group-text">@</span>
-                        <input type="text" class="form-control" id="username" placeholder="Username" required="">
-                        <div class="invalid-feedback">
-                            Your username is required.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <label for="email" class="form-label">Email <span class="text-muted">(Optional)</span></label>
-                    <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                    <div class="invalid-feedback">
-                        Please enter a valid email address for shipping updates.
                     </div>
                 </div>
 

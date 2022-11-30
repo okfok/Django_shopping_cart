@@ -1,7 +1,17 @@
 
-
-.errorlist{
+.errorlist {
     list-style-type: none;
 
 }
 
+.button_cart_change_count {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: arial, sans-serif;
+    cursor: pointer;
+    /*optional*/
+    /*input has OS specific font-family*/
+    /*color: #069;*/
+    /*text-decoration: underline;*/
+}
