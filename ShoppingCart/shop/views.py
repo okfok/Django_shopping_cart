@@ -34,7 +34,7 @@ def cart(request):
         return render(request, 'shop/cart.html', {
             'citems': citems,
             'count': len(citems),
-            'total': sum([citem.item.price for citem in citems])
+            'total': sum([citem.price for citem in citems])
         })
 
 
