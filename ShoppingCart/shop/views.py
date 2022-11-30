@@ -36,6 +36,8 @@ def cart(request):
             'count': len(citems),
             'total': sum([citem.price for citem in citems])
         })
+    else:
+        return HttpResponseRedirect('/signup')
 
 
 def add_item_to_cart(request, item_id):
