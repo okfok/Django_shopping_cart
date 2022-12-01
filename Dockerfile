@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 COPY ShoppingCart .
 
 
-CMD [ "python", "ShoppingCart/manage.py", "runserver"]
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000"]
