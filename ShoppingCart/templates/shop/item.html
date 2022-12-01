@@ -1,32 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %}{{item.name}}{% endblock %}
+{% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
 
-<div class="row align-items-center g-5 py-5">
-    {% if item.img %}
-    <div class="col-10 col-sm-8 col-lg-6">
-        {% load static %}
-        <img src="{% static 'img/{{item.img}}' %}" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes"
-             width="700" height="500" loading="lazy">
-    </div>
-    {% endif %}
+    <div class="row align-items-center g-5 py-5">
+        {% if item.img %}
+            <div class="col-10 col-sm-8 col-lg-6">
+                {% load static %}
+                <img src="{% static 'img/{{item.img}}' %}" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes"
+                     width="700" height="500" loading="lazy">
+            </div>
+        {% endif %}
 
-    <div class="col-lg-6">
-        <h1 class="display-5 fw-bold lh-1 mb-3">{{item.name}}</h1>
-        <p class="lead">{{item.description}}</p>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            <!--            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Primary</button>-->
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold lh-1 mb-3">{{ item.name }}</h1>
+            <p class="lead">{{ item.description }}</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <!--            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Primary</button>-->
 
-            <form action="/item/{{item.id}}/add_to_cart" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-secondary btn-lg px-4">Add to cart</button>
-            </form>
+                <form action="/item/{{ item.id }}/add_to_cart" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary btn-lg px-4">Add to cart</button>
+                </form>
 
+            </div>
         </div>
     </div>
-</div>
 
 
 {% endblock %}

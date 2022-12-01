@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Log-in{% endblock %}
 {% block content %}
-<dev align="center">
-    <h1>Log-in</h1>
-    <p>Please, use the following form to log-in:</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <dev align="center">
+        <h1>Log-in</h1>
+        <p>Please, use the following form to log-in:</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
 
-        {% if error %}
-        <div class="p-3 mb-2 bg-danger text-white">{{error}}</div>
-        {% endif %}
+            {% if error %}
+                <div class="p-3 mb-2 bg-danger text-white">{{ error }}</div>
+            {% endif %}
 
-        <button class="btn btn-lg btn-primary" type="submit">Log In</button>
+            <button class="btn btn-lg btn-primary" type="submit">Log In</button>
 
-    </form>
-</dev>
+        </form>
+    </dev>
 {% endblock %}
