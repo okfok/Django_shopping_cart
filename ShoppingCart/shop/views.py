@@ -7,13 +7,12 @@ from .forms import LoginForm, SignUpForm
 from .models import Item, Cart, CartItem
 
 
+# -----------------------------------------------------------------------------------------------------------------------
 def is_authenticated(func):
     def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated:
-
             return func(request, *args, **kwargs)
-        else:
-            return HttpResponseRedirect('/signup')
+        return HttpResponseRedirect('/signup')
 
     return wrapper
 
@@ -21,10 +20,8 @@ def is_authenticated(func):
 def is_post_method(func):
     def wrapper(request, *args, **kwargs):
         if request.method == 'POST':
-
             return func(request, *args, **kwargs)
-        else:
-            raise Http404()
+        raise Http404()
 
     return wrapper
 
@@ -52,8 +49,14 @@ def index(request):
     )
 
 
-def items(request):
-    ...
+def items(request, page=1):
+    latest_items = Item.objects.order_by('-pub_date')[(page - 1) * 10: page * 10]
+    next_items = Item.objects.order_by('-pub_date')[page * 10: (page + 1) * 10]
+    return render(request, 'shop/items.html', {
+        'latest_items': latest_items,
+        'page': page,
+        'next_page': (page + 1 if next_items else None),
+    })
 
 
 def item(request, item_id):
@@ -66,7 +69,7 @@ def cart(request, cart):
     return render(request, 'shop/cart.html', {
         'citems': citems,
         'count': len(citems),
-        'total': sum([citem.price for citem in citems])
+        'total': sum((citem.price for citem in citems))
     })
 
 
@@ -140,10 +143,9 @@ def sign_up(request):
             login(request, user)
             return HttpResponseRedirect('/')
 
-        else:
-            return render(request, 'registration/signup.html', {'form': form, 'error': 'Invalid form'})
-    else:
-        form = SignUpForm()
+        return render(request, 'registration/signup.html', {'form': form, 'error': 'Invalid form'})
+
+    form = SignUpForm()
 
     return render(request, 'registration/signup.html', {'form': form})
 
@@ -159,8 +161,8 @@ def user_login(request):
                 if user.is_active:
                     login(request, user)
                     return HttpResponse('Authenticated successfully')
-                else:
-                    return render(request, 'shop/login.html', {'form': form, 'error': 'Disabled account'})
+
+                return render(request, 'shop/login.html', {'form': form, 'error': 'Disabled account'})
             else:
                 return render(request, 'shop/login.html', {'form': form, 'error': 'Invalid login'})
     else:
