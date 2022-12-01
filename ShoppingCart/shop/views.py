@@ -32,11 +32,13 @@ def is_post_method(func):
 def create_cart_if_not_exists(func):
     @is_authenticated
     def wrapper(request, *args, **kwargs):
-        cart = Cart.objects.get(user=request.user)
-        if not cart:
-            Cart(request.user).save()
 
-        return func(request, *args, **kwargs)
+        try:
+            cart = Cart.objects.get(user=request.user)
+        except Cart.DoesNotExist:
+            cart = Cart(user=request.user).save()
+
+        return func(request, *args, **kwargs, cart=cart)
 
     return wrapper
 
@@ -59,9 +61,7 @@ def item(request, item_id):
 
 
 @create_cart_if_not_exists
-def cart(request):
-    cart = Cart.objects.get(user=request.user)
-
+def cart(request, cart):
     citems = CartItem.objects.filter(cart=cart)
     return render(request, 'shop/cart.html', {
         'citems': citems,
@@ -72,9 +72,7 @@ def cart(request):
 
 @is_post_method
 @create_cart_if_not_exists
-def add_item_to_cart(request, item_id):
-    cart = Cart.objects.get(user=request.user)
-
+def add_item_to_cart(request, item_id, cart):
     item = Item.objects.get(id=item_id)
 
     if item not in [citem.item for citem in CartItem.objects.filter(cart=cart)]:
@@ -85,8 +83,7 @@ def add_item_to_cart(request, item_id):
 
 @is_post_method
 @create_cart_if_not_exists
-def increase_item_count_in_cart(request, citem_id):
-    cart = Cart.objects.get(user=request.user)
+def increase_item_count_in_cart(request, citem_id, cart):
     citem = CartItem.objects.get(id=citem_id)
 
     if citem in CartItem.objects.filter(cart=cart):
@@ -98,8 +95,7 @@ def increase_item_count_in_cart(request, citem_id):
 
 @is_post_method
 @create_cart_if_not_exists
-def decrease_item_count_in_cart(request, citem_id):
-    cart = Cart.objects.get(user=request.user)
+def decrease_item_count_in_cart(request, citem_id, cart):
     citem = CartItem.objects.get(id=citem_id)
 
     if citem in CartItem.objects.filter(cart=cart):
@@ -114,8 +110,7 @@ def decrease_item_count_in_cart(request, citem_id):
 
 @is_post_method
 @create_cart_if_not_exists
-def remove_item_in_cart(request, citem_id):
-    cart = Cart.objects.get(user=request.user)
+def remove_item_in_cart(request, citem_id, cart):
     citem = CartItem.objects.get(id=citem_id)
 
     if citem in CartItem.objects.filter(cart=cart):
