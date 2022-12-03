@@ -1,8 +1,35 @@
-#Web store build using Django and docker
+# E-commerce web store app
+Created using Django framework and docker
 
-## Install and setup 
+Has admin panel, resent products, autorisation system and shopping cart
 
-It works with different data base, default: SQLLite, can be changed in 
+# Install and setup 
+
+To clone repo:
+```
+git clone https://github.com/okfok/Django_shopping_cart.git
+```
+
+## Prerequirements
+Python ver 3.10
+
+Creating virtual environment:
+```
+python -m venv venv
+```
+Installing requirements:
+```
+pip install -r requirements.txt
+```
+## DataBase
+The following database officially supported:
++ PostgreSQL
++ MariaDB
++ MySQL
++ Oracle
++ SQLite
+
+Default: SQLLite, can be changed in 
 ```
 ./ShoppingCart/ShoppingCart/settings.py
 ```
@@ -10,6 +37,7 @@ To format db use comand:
 ```
 python ./ShoppingCart/manage.py migrate
 ```
+## Running server
 To run:
 ```
 python ./ShoppingCart/manage.py runserver
