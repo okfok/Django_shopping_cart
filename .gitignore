@@ -1,8 +1,6 @@
 venv
 .idea
 .mypy_cache
-ShoppingCart/db.sqlite3
-ShoppingCart/ShoppingCart/__pycache__
-ShoppingCart/shop/__pycache__
-ShoppingCart/shop/migrations/__pycache__
+*.sqlite3
+*/__pycache__
 fugitive:
