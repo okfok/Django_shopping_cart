@@ -1,43 +1,11 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
+from .decorators import create_cart_if_not_exists, post_method_only
 from .forms import LoginForm, SignUpForm
-from .models import Item, Cart, CartItem
-
-
-# -----------------------------------------------------------------------------------------------------------------------
-def is_authenticated(func):
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return func(request, *args, **kwargs)
-        return HttpResponseRedirect('/signup')
-
-    return wrapper
-
-
-def is_post_method(func):
-    def wrapper(request, *args, **kwargs):
-        if request.method == 'POST':
-            return func(request, *args, **kwargs)
-        raise Http404()
-
-    return wrapper
-
-
-def create_cart_if_not_exists(func):
-    @is_authenticated
-    def wrapper(request, *args, **kwargs):
-
-        try:
-            cart = Cart.objects.get(user=request.user)
-        except Cart.DoesNotExist:
-            cart = Cart(user=request.user).save()
-
-        return func(request, *args, **kwargs, cart=cart)
-
-    return wrapper
+from .models import Item, CartItem
 
 
 def index(request):
@@ -73,7 +41,7 @@ def cart(request, cart):
     })
 
 
-@is_post_method
+@post_method_only
 @create_cart_if_not_exists
 def add_item_to_cart(request, item_id, cart):
     item = Item.objects.get(id=item_id)
@@ -84,7 +52,7 @@ def add_item_to_cart(request, item_id, cart):
     return HttpResponseRedirect('/cart')
 
 
-@is_post_method
+@post_method_only
 @create_cart_if_not_exists
 def increase_item_count_in_cart(request, citem_id, cart):
     citem = CartItem.objects.get(id=citem_id)
@@ -96,7 +64,7 @@ def increase_item_count_in_cart(request, citem_id, cart):
     return HttpResponseRedirect('/cart')
 
 
-@is_post_method
+@post_method_only
 @create_cart_if_not_exists
 def decrease_item_count_in_cart(request, citem_id, cart):
     citem = CartItem.objects.get(id=citem_id)
@@ -111,7 +79,7 @@ def decrease_item_count_in_cart(request, citem_id, cart):
     return HttpResponseRedirect('/cart')
 
 
-@is_post_method
+@post_method_only
 @create_cart_if_not_exists
 def remove_item_in_cart(request, citem_id, cart):
     citem = CartItem.objects.get(id=citem_id)
